@@ -1,5 +1,6 @@
 .idea
 .DS_Store
+.vscode
 .tern-project
 node_modules/
 dist/
