@@ -1,1 +1,0 @@
-export creatJWT from './creatJWT';
