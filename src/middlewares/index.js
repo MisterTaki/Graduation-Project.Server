@@ -1,2 +1,2 @@
-export checkJWT from './checkJWT';
+export checkToken from './checkToken';
 export errorHandler from './errorHandler';

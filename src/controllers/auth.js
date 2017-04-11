@@ -7,9 +7,16 @@ const user = {
   pwd: '123456'
 };
 
-function login (req, res, next) {
-  const account = req.body.account;
-  const pwd = req.body.pwd;
+/**
+ * 登录
+ * @method    {Post}
+ * @property  {String}  body.account  [账号]
+ * @property  {String}  body.pwd      [密码]
+ * @return    {Object}
+ */
+function login ({ body }, res, next) {
+  const account = body.account;
+  const pwd = body.pwd;
   if (account === user.account && pwd === user.pwd) {
     const token = jwt.sign({
       account
