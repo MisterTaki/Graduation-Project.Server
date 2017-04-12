@@ -1,18 +1,14 @@
 import crypto from 'crypto';
-import APIError from './APIError';
 
-export default pwd => new Promise((resolve, reject) => {
-  crypto.randomBytes(128, (err, salt) => {
-    if (err) {
-      reject(new APIError('密码加密失败', 403));
-    }
-    crypto.pbkdf2(pwd, salt.toString('hex'), 4096, 256, (error, hash) => {
-      if (error) {
-        reject(new APIError('密码加密失败', 403));
-      }
+export default originalPwd => new Promise((resolve, reject) => {
+  crypto.randomBytes(8, (err, salt) => {
+    if (err) reject(err);
+    const saltHex = salt.toString('hex');
+    crypto.pbkdf2(originalPwd, saltHex, 1024, 8, 'sha1', (error, pwd) => {
+      if (err) reject(err);
       resolve({
-        salt: salt.toString('hex'),
-        hash: hash.toString('hex')
+        salt: saltHex,
+        pwd: pwd.toString('hex')
       });
     });
   });

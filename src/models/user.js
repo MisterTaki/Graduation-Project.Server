@@ -1,8 +1,9 @@
-import { Schema, model } from 'mongoose';
+import mongoose from 'mongoose';
 
-const userSchema = Schema({
-  // common
-  id: {
+mongoose.Promise = Promise;
+
+const studentSchema = mongoose.Schema({
+  account: {
     type: String,
     required: true,
     index: true,
@@ -12,11 +13,11 @@ const userSchema = Schema({
     type: String,
     required: true
   },
-  userName: {
+  salt: {
     type: String,
     required: true
   },
-  identity: {
+  name: {
     type: String,
     required: true
   },
@@ -28,20 +29,98 @@ const userSchema = Schema({
     type: String,
     required: true
   },
+  ID: {
+    type: String,
+    required: true
+  },
   email: String,
   mobile: String,
-  // student
   class: String,
   major: String,
   choosedTopic: String,
-  // teacher
   teacher: String,
+});
+
+const teacherSchema = mongoose.Schema({
+  account: {
+    type: String,
+    required: true,
+    index: true,
+    unique: true
+  },
+  pwd: {
+    type: String,
+    required: true
+  },
+  salt: {
+    type: String,
+    required: true
+  },
+  name: {
+    type: String,
+    required: true
+  },
+  gender: {
+    type: String,
+    required: true
+  },
+  academy: {
+    type: String,
+    required: true
+  },
+  ID: {
+    type: Number,
+    required: true
+  },
+  email: String,
+  mobile: String,
   education: String,
   position: String,
   topics: [String],
-  students: [String],
-  // admin
-  level: Number
+  students: [String]
 });
 
-export default model('User', userSchema);
+const adminSchema = mongoose.Schema({
+  account: {
+    type: String,
+    required: true,
+    index: true,
+    unique: true
+  },
+  level: {
+    type: Number,
+    required: true
+  },
+  pwd: {
+    type: String,
+    required: true
+  },
+  salt: {
+    type: String,
+    required: true
+  },
+  name: {
+    type: String,
+    required: true
+  },
+  gender: {
+    type: String,
+    required: true
+  },
+  academy: {
+    type: String,
+    required: true
+  },
+  ID: {
+    type: Number,
+    required: true
+  },
+  email: String,
+  mobile: String
+});
+
+export default {
+  Student: mongoose.model('Student', studentSchema),
+  Teacher: mongoose.model('Teacher', teacherSchema),
+  Admin: mongoose.model('Admin', adminSchema),
+};

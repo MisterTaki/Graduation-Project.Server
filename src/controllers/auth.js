@@ -4,7 +4,8 @@ import { APIError } from '../helpers';
 
 const user = {
   account: '41355025',
-  pwd: '123456'
+  pwd: '123456',
+  identity: 'student'
 };
 
 /**
@@ -15,11 +16,11 @@ const user = {
  * @return    {Object}
  */
 function login ({ body }, res, next) {
-  const account = body.account;
-  const pwd = body.pwd;
-  if (account === user.account && pwd === user.pwd) {
+  const { account, pwd, identity } = body;
+  if (account === user.account && pwd === user.pwd && identity === user.identity) {
     const token = jwt.sign({
-      account
+      account,
+      identity
     }, config.jwt.secret, {
       expiresIn: config.jwt.expiresIn
     });
