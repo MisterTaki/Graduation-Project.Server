@@ -10,12 +10,19 @@ import { User } from '../models';
  * @property  {String}  body.identity         [身份]
  */
 function login ({ body }, res, next) {
+  let userInfo;
   const { account, originalPwd, identity } = body;
   User[titleCase(identity)].get({ account })
-    .then(({ salt, pwd }) => crypto.decrypt(originalPwd, salt, pwd))
+    .then(({ salt, pwd, name }) => {
+      userInfo = {
+        name
+      };
+      return crypto.decrypt(originalPwd, salt, pwd);
+    })
     .then(() => JWT.creat(account, identity))
     .then(token => res.json({
-      token
+      token,
+      userInfo
     }))
     .catch(next);
 }

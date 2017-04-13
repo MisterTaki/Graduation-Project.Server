@@ -1,26 +1,15 @@
 import { crypto } from '../helpers';
+import { titleCase } from '../utils';
 import { User } from '../models';
 
 /**
- * 注册
+ * 创建
  * @method    {Post}
  * @param     {Object}  body             [用户信息]
  * @property  {String}  params.identity  [用户身份]
  */
-function register ({ params, body }, res, next) {
-  let Account;
-  switch (params.identity) {
-    case 'student':
-      Account = User.Student;
-      break;
-    case 'Teacher':
-      Account = User.Teacher;
-      break;
-    case 'Admin':
-      Account = User.Admin;
-      break;
-    default:
-  }
+function create ({ params, body }, res, next) {
+  const Account = User[titleCase(body.identity)];
   crypto.encrypt(body.ID.substring(12))
     .then(({ salt, pwd }) => {
       const user = new Account({
@@ -30,12 +19,16 @@ function register ({ params, body }, res, next) {
       });
       return user.save();
     })
-    .then(() => res.json({
-      message: '注册用户成功'
+    .then(({ account }) => res.json({
+      account
     }))
     .catch(next);
 }
 
+// function load ({ user }, res, next) {
+//
+// }
+
 export default {
-  register
+  create
 };
