@@ -1,6 +1,12 @@
-import { encrypt } from '../helpers';
+import { crypto } from '../helpers';
 import { User } from '../models';
 
+/**
+ * 注册
+ * @method    {Post}
+ * @param     {Object}  body             [用户信息]
+ * @property  {String}  params.identity  [用户身份]
+ */
 function register ({ params, body }, res, next) {
   let Account;
   switch (params.identity) {
@@ -15,7 +21,7 @@ function register ({ params, body }, res, next) {
       break;
     default:
   }
-  encrypt(body.ID.substring(12))
+  crypto.encrypt(body.ID.substring(12))
     .then(({ salt, pwd }) => {
       const user = new Account({
         ...body,

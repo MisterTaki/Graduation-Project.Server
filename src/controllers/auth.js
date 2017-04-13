@@ -1,35 +1,23 @@
-import jwt from 'jsonwebtoken';
-import config from '../config';
-import { APIError } from '../helpers';
-
-const user = {
-  account: '41355025',
-  pwd: '123456',
-  identity: 'student'
-};
+import { crypto, JWT } from '../helpers';
+import { titleCase } from '../utils';
+import { User } from '../models';
 
 /**
  * 登录
  * @method    {Post}
- * @property  {String}  body.account  [账号]
- * @property  {String}  body.pwd      [密码]
- * @return    {Object}
+ * @property  {String}  body.account          [账号]
+ * @property  {String}  body.originalPwd      [密码]
+ * @property  {String}  body.identity         [身份]
  */
 function login ({ body }, res, next) {
-  const { account, pwd, identity } = body;
-  if (account === user.account && pwd === user.pwd && identity === user.identity) {
-    const token = jwt.sign({
-      account,
-      identity
-    }, config.jwt.secret, {
-      expiresIn: config.jwt.expiresIn
-    });
-    return res.json({
-      account,
+  const { account, originalPwd, identity } = body;
+  User[titleCase(identity)].get({ account })
+    .then(({ salt, pwd }) => crypto.decrypt(originalPwd, salt, pwd))
+    .then(() => JWT.creat(account, identity))
+    .then(token => res.json({
       token
-    });
-  }
-  return next(new APIError('用户名或密码错误', 401));
+    }))
+    .catch(next);
 }
 
 export default {

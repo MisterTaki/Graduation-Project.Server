@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { APIError } from '../helpers';
 
 mongoose.Promise = Promise;
 
@@ -118,6 +119,21 @@ const adminSchema = mongoose.Schema({
   email: String,
   mobile: String
 });
+
+const statics = {
+  get (account) {
+    return new Promise((resolve, reject) => {
+      this.findOne(account).exec().then((user) => {
+        if (user) resolve(user);
+        reject(new APIError('账号不存在', 404));
+      });
+    });
+  }
+};
+
+studentSchema.statics = statics;
+teacherSchema.statics = statics;
+adminSchema.statics = statics;
 
 export default {
   Student: mongoose.model('Student', studentSchema),
