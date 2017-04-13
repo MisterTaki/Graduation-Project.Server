@@ -15,7 +15,8 @@ function login ({ body }, res, next) {
   User[titleCase(identity)].get({ account })
     .then(({ salt, pwd, name }) => {
       userInfo = {
-        name
+        name,
+        identity
       };
       return crypto.decrypt(originalPwd, salt, pwd);
     })
