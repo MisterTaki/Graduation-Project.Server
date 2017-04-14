@@ -1,23 +1,30 @@
 import jwt from 'jsonwebtoken';
-import config from '../config';
+import unless from 'express-unless';
+import { JWT } from '../config';
 import { APIError } from '../helpers';
 
-export default function (req, res, next) {
+/* eslint consistent-return: 0 */
+function checkToken (req, res, next) {
   const token = (req.body && req.body.token) || (req.query && req.query.token) || req.headers.Authorization;
   if (token) {
-    jwt.verify(token, config.jwt.secret, (err, { account, identity }) => {
+    jwt.verify(token, JWT.secret, (err, { _id, identity }) => {
       if (err) {
         if (err.name === 'TokenExpiredError') {
-          return next(new APIError('认证信息已过期，请重新登录', 401));
+          return next(new APIError('登录信息已过期，请重新登录', 401));
         }
-        return next(new APIError('认证信息无效，请重新登录', 401));
+        return next(new APIError('登录信息已无效，请重新登录', 401));
       }
       req.user = {
-        account,
+        _id,
         identity
       };
       return next();
     });
+  } else {
+    return next(new APIError('没有登录信息，请重新登录', 401));
   }
-  return next(new APIError('没有认证信息，请重新登录', 401));
 }
+
+checkToken.unless = unless;
+
+export default checkToken;

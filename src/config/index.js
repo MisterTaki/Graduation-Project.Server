@@ -1,7 +1,5 @@
-export default {
-  jwt: {
-    secret: new Buffer('PrivateKey', 'base64'),
-    expiresIn: '1d'
-  },
-  mongodbURI: 'mongodb://localhost:27017/Graduation-Project'
-};
+export JWT from './JWT';
+export mongoDB from './mongoDB';
+export system from './system';
+export version from './version';
+export publicPath from './publicPath';

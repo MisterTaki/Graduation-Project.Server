@@ -22,7 +22,7 @@ function decrypt (originalPwd, salt, pwd) {
     crypto.pbkdf2(originalPwd, salt, 1024, 8, 'sha1', (err, hash) => {
       if (err) reject(err);
       if (hash.toString('hex') === pwd) resolve();
-      reject(new APIError('用户名或密码错误', 401));
+      reject(new APIError('用户名或密码错误'));
     });
   });
 }

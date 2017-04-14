@@ -1,13 +1,10 @@
 import mongoose from 'mongoose';
 import { APIError } from '../helpers';
 
-mongoose.Promise = Promise;
-
 const studentSchema = mongoose.Schema({
-  account: {
+  _id: {
     type: String,
     required: true,
-    index: true,
     unique: true
   },
   pwd: {
@@ -43,10 +40,9 @@ const studentSchema = mongoose.Schema({
 });
 
 const teacherSchema = mongoose.Schema({
-  account: {
+  _id: {
     type: String,
     required: true,
-    index: true,
     unique: true
   },
   pwd: {
@@ -82,10 +78,9 @@ const teacherSchema = mongoose.Schema({
 });
 
 const adminSchema = mongoose.Schema({
-  account: {
+  _id: {
     type: String,
     required: true,
-    index: true,
     unique: true
   },
   level: {
@@ -121,11 +116,19 @@ const adminSchema = mongoose.Schema({
 });
 
 const statics = {
-  get (account) {
+  getById (id) {
     return new Promise((resolve, reject) => {
-      this.findOne(account).exec().then((user) => {
+      this.findById(id).exec().then((user) => {
         if (user) resolve(user);
-        reject(new APIError('账号不存在', 404));
+        reject(new APIError('账号不存在'));
+      });
+    });
+  },
+  notUserById (id) {
+    return new Promise((resolve, reject) => {
+      this.findById(id).exec().then((user) => {
+        if (user) reject(new APIError('账号已存在'));
+        resolve();
       });
     });
   }

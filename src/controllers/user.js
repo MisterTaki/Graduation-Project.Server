@@ -1,5 +1,5 @@
 import { crypto } from '../helpers';
-import { titleCase } from '../utils';
+import { titleCase, successRes } from '../utils';
 import { User } from '../models';
 
 /**
@@ -10,17 +10,19 @@ import { User } from '../models';
  */
 function create ({ params, body }, res, next) {
   const Account = User[titleCase(body.identity)];
-  crypto.encrypt(body.ID.substring(12))
+  const { _id } = body;
+  Account.notUserById(_id)
+    .then(() => crypto.encrypt(body.ID.substring(12)))
     .then(({ salt, pwd }) => {
       const user = new Account({
         ...body,
         salt,
-        pwd
+        pwd,
       });
       return user.save();
     })
-    .then(({ account }) => res.json({
-      account
+    .then(() => res.json({
+      ...successRes
     }))
     .catch(next);
 }

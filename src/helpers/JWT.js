@@ -1,9 +1,9 @@
 import jwt from 'jsonwebtoken';
-import config from '../config';
+import { JWT } from '../config';
 
-function creat (account, identity) {
+function creat (_id, identity) {
   return new Promise((resolve, reject) => {
-    jwt.sign({ account, identity }, config.jwt.secret, { expiresIn: config.jwt.expiresIn }, (err, token) => {
+    jwt.sign({ _id, identity }, JWT.secret, { expiresIn: JWT.expiresIn }, (err, token) => {
       if (err) reject(err);
       resolve(token);
     });
@@ -12,7 +12,7 @@ function creat (account, identity) {
 
 function verify (token) {
   return new Promise((resolve, reject) => {
-    jwt.verify(token, config.jwt.secret, (err, decoded) => {
+    jwt.verify(token, JWT.secret, (err, decoded) => {
       if (err) reject(err);
       resolve(decoded);
     });
