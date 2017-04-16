@@ -5,7 +5,7 @@ import { APIError } from '../helpers';
 
 /* eslint consistent-return: 0 */
 function checkToken (req, res, next) {
-  const token = (req.body && req.body.token) || (req.query && req.query.token) || req.headers.Authorization;
+  const token = (req.body && req.body.token) || (req.query && req.query.token) || req.headers.authorization; // headers' attribute-name are lower-case;
   if (token) {
     jwt.verify(token, JWT.secret, (err, { _id, identity }) => {
       if (err) {

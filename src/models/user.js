@@ -15,7 +15,7 @@ const studentSchema = mongoose.Schema({
     type: String,
     required: true
   },
-  name: {
+  username: {
     type: String,
     required: true
   },
@@ -53,7 +53,7 @@ const teacherSchema = mongoose.Schema({
     type: String,
     required: true
   },
-  name: {
+  username: {
     type: String,
     required: true
   },
@@ -95,7 +95,7 @@ const adminSchema = mongoose.Schema({
     type: String,
     required: true
   },
-  name: {
+  username: {
     type: String,
     required: true
   },

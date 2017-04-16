@@ -1,4 +1,4 @@
-import { crypto, JWT } from '../helpers';
+import { Crypto, JWT } from '../helpers';
 import { titleCase, successRes } from '../utils';
 import { User } from '../models';
 
@@ -13,14 +13,14 @@ function login ({ body }, res, next) {
   let userInfo;
   const { _id, originalPwd, identity } = body;
   User[titleCase(identity)].getById(_id)
-    .then(({ salt, pwd, name }) => {
+    .then(({ salt, pwd, username }) => {
       userInfo = {
-        name,
+        username,
         identity
       };
-      return crypto.decrypt(originalPwd, salt, pwd);
+      return Crypto.decrypt(originalPwd, salt, pwd);
     })
-    .then(() => JWT.creat(_id, identity))
+    .then(() => JWT.creat(_id, userInfo.username, identity))
     .then(token => res.json({
       ...successRes,
       result: {
@@ -31,6 +31,20 @@ function login ({ body }, res, next) {
     .catch(next);
 }
 
+function load (req, res, next) {
+  const { _id, identity } = req.user;
+  User[titleCase(identity)].getById(_id)
+    .then(({ username }) => res.json({
+      ...successRes,
+      result: {
+        username,
+        identity
+      }
+    }))
+    .catch(next);
+}
+
 export default {
-  login
+  login,
+  load
 };

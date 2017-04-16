@@ -1,7 +1,7 @@
 import { System } from '../models';
 import { successRes } from '../utils';
 
-function load (req, res, next) {
+function getStatus (req, res, next) {
   System.getStatus()
     .then(status => res.json({
       ...successRes,
@@ -13,5 +13,5 @@ function load (req, res, next) {
 }
 
 export default {
-  load
+  getStatus
 };

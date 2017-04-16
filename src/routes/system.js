@@ -3,6 +3,6 @@ import { system } from '../controllers';
 
 const router = express.Router();
 
-router.get('/load', system.load);
+router.get('/status', system.getStatus);
 
 export default router;

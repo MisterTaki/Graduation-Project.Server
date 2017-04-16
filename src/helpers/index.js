@@ -1,3 +1,3 @@
 export APIError from './APIError';
+export Crypto from './Crypto';
 export JWT from './JWT';
-export crypto from './crypto';
