@@ -15,7 +15,6 @@ mongoose.connect(mongoDB.URI, (err) => {
     console.error(`ERROR: ${err.message}`);
     process.exit(1);
   }
-  mongoose.Promise = Promise;
   console.log('INFO: 数据库连接成功');
   initializeSystem().then((info) => {
     console.log(`INFO: ${info}`);
@@ -26,7 +25,6 @@ mongoose.connect(mongoDB.URI, (err) => {
 
 const { URIprefix } = version;
 const app = express();
-
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
