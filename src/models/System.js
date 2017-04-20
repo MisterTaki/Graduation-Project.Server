@@ -1,5 +1,5 @@
-import mongoose from 'mongoose';
 import moment from 'moment';
+import mongoose from '../mongoose';
 import { APIError } from '../helpers';
 import { system } from '../config';
 

@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from '../mongoose';
 import { APIError } from '../helpers';
 
 const studentSchema = mongoose.Schema({
@@ -161,6 +161,14 @@ const statics = {
       this.findById(id).exec().then((user) => {
         if (user) resolve(user);
         reject(new APIError('账号不存在或未申请'));
+      });
+    });
+  },
+  findByEmail (email) {
+    return new Promise((resolve, reject) => {
+      this.findOne({ email }).exec().then((user) => {
+        if (user) resolve(user);
+        reject(new APIError('此邮箱未认证'));
       });
     });
   },
