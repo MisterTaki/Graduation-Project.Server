@@ -15,7 +15,6 @@ function resetPwd (toEmail) {
     };
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
-        console.log(error);
         return reject(new APIError('发送验证码失败'));
       }
       return resolve(info);
