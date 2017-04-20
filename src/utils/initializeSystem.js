@@ -7,11 +7,10 @@ export default function () {
     System.findById(id).exec()
     .then((user) => {
       if (user) return resolve('系统设置已初始化');
-      const system = new System({
+      return System.create({
         _id: id,
         ...others
       });
-      return system.save();
     }, () => reject('系统设置查询错误'))
     .then(() => resolve('系统设置初始化成功'), () => reject('系统设置初始化错误'));
   });
