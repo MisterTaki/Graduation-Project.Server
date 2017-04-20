@@ -1,4 +1,4 @@
-import { Crypto } from '../helpers';
+import { APIError, Crypto, Email } from '../helpers';
 import { titleCase, successRes } from '../utils';
 import { User } from '../models';
 
@@ -13,14 +13,11 @@ function create ({ body }, res, next) {
   const { _id } = body;
   Account.notUserById(_id)
     .then(() => Crypto.encrypt(body.ID.substring(12)))
-    .then(({ salt, pwd }) => {
-      const user = new Account({
-        ...body,
-        salt,
-        pwd,
-      });
-      return user.save();
-    })
+    .then(({ salt, pwd }) => Account.create({
+      ...body,
+      salt,
+      pwd,
+    }))
     .then(() => res.json({
       ...successRes
     }))
@@ -34,23 +31,31 @@ function apply ({ body }, res, next) {
   const { _id } = body;
   targetAccount.notUserById(_id)
     .then(() => Account.notUserById(_id))
-    .then(() => {
-      const user = new Account({
-        ...info
-      });
-      return user.save();
-    })
+    .then(() => Account.create({
+      ...info
+    }))
     .then(() => res.json({
       ...successRes
     }))
     .catch(next);
 }
 
-// function load ({ user }, res, next) {
-//
-// }
+function forgetPwd ({ body }, res, next) {
+  const { identity, boundEmail } = body;
+  if (!boundEmail || !identity) {
+    return next(new APIError('Missing parameters', 400));
+  }
+  const Account = User[titleCase(identity)];
+  return Account.findByEmail(boundEmail)
+    .then(() => Email.resetPwd(boundEmail))
+    .then(() => res.json({
+      ...successRes
+    }))
+    .catch(next);
+}
 
 export default {
   create,
-  apply
+  apply,
+  forgetPwd
 };
