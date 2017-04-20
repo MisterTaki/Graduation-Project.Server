@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { JWT } from '../config';
 
-function creat (_id, username, identity) {
+function create (_id, username, identity) {
   return new Promise((resolve, reject) => {
     jwt.sign({ _id, username, identity }, JWT.secret, { expiresIn: JWT.expiresIn }, (err, token) => {
       if (err) reject(err);
@@ -20,6 +20,6 @@ function verify (token) {
 }
 
 export default {
-  creat,
+  create,
   verify
 };
