@@ -20,7 +20,7 @@ function login ({ body }, res, next) {
       };
       return Crypto.decrypt(originalPwd, salt, pwd);
     })
-    .then(() => JWT.creat(_id, userInfo.username, identity))
+    .then(() => JWT.create(_id, userInfo.username, identity))
     .then(token => res.json({
       ...successRes,
       result: {
