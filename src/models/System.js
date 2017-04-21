@@ -41,7 +41,7 @@ systemSchema.statics = {
           }
           return reject(new APIError('系统暂未设置', 500));
         })
-        .catch(() => reject(new APIError('无法读取系统设置', 500)));
+        .catch(err => reject(err));
     });
   }
 };

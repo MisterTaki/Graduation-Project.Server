@@ -67,10 +67,17 @@ const teacherSchema = mongoose.Schema({
   },
   ID: {
     type: Number,
-    required: true
+    required: true,
+    unique: true
   },
-  email: String,
-  mobile: String,
+  email: {
+    type: String,
+    unique: true
+  },
+  mobile: {
+    type: String,
+    unique: true
+  },
   education: String,
   position: String,
   topics: [String],
@@ -109,10 +116,17 @@ const adminSchema = mongoose.Schema({
   },
   ID: {
     type: Number,
-    required: true
+    required: true,
+    unique: true
   },
-  email: String,
-  mobile: String
+  email: {
+    type: String,
+    unique: true
+  },
+  mobile: {
+    type: String,
+    unique: true
+  }
 });
 
 const applyStudentSchema = mongoose.Schema({
@@ -135,15 +149,18 @@ const applyStudentSchema = mongoose.Schema({
   },
   ID: {
     type: String,
-    required: true
+    required: true,
+    unique: true
   },
   email: {
     type: String,
-    required: true
+    required: true,
+    unique: true
   },
   mobile: {
     type: String,
-    required: true
+    required: true,
+    unique: true
   },
   class: {
     type: String,
@@ -156,28 +173,43 @@ const applyStudentSchema = mongoose.Schema({
 });
 
 const statics = {
-  getById (id) {
+  getUserById (id) {
     return new Promise((resolve, reject) => {
-      this.findById(id).exec().then((user) => {
+      this.findById(id).exec()
+      .then((user) => {
         if (user) resolve(user);
         reject(new APIError('账号不存在或未申请'));
-      });
+      })
+      .catch(err => reject(err));
     });
   },
-  findByEmail (email) {
+  hasUserByEmail (email) {
     return new Promise((resolve, reject) => {
-      this.findOne({ email }).exec().then((user) => {
+      this.findOne({ email }).exec()
+      .then((user) => {
         if (user) resolve(user);
         reject(new APIError('此邮箱未认证'));
-      });
+      })
+      .catch(err => reject(err));
     });
   },
   notUserById (id) {
     return new Promise((resolve, reject) => {
-      this.findById(id).exec().then((user) => {
+      this.findById(id).exec()
+      .then((user) => {
         if (user) reject(new APIError('账号已存在或已申请'));
         resolve();
-      });
+      })
+      .catch(err => reject(err));
+    });
+  },
+  setPwdByEmail (email, salt, pwd) {
+    return new Promise((resolve, reject) => {
+      this.findOneAndUpdate({ email }, { salt, pwd }).exec()
+      .then(() => {
+        resolve();
+      })
+      .catch(err => reject(err));
     });
   }
 };
