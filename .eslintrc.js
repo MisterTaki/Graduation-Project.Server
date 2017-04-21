@@ -18,6 +18,7 @@ module.exports = {
     "func-names": 0,
     "max-len": 0,
     "no-param-reassign": 0,
-    "space-before-function-paren": ["error", "always"]
+    "space-before-function-paren": ["error", "always"],
+    "no-underscore-dangle": ["error", { "allow": ["_id"] }]
   }
 }
