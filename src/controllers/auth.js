@@ -12,7 +12,7 @@ import { User } from '../models';
 function login ({ body }, res, next) {
   let userInfo;
   const { _id, originalPwd, identity } = body;
-  User[titleCase(identity)].getById(_id)
+  return User[titleCase(identity)].getUserById(_id)
     .then(({ salt, pwd, username }) => {
       userInfo = {
         username,
@@ -33,7 +33,7 @@ function login ({ body }, res, next) {
 
 function load (req, res, next) {
   const { _id, identity } = req.user;
-  User[titleCase(identity)].getById(_id)
+  return User[titleCase(identity)].getUserById(_id)
     .then(({ username }) => res.json({
       ...successRes,
       result: {
