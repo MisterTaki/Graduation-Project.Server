@@ -1,3 +1,3 @@
 export default {
-  URI: 'mongodb://localhost:27017/Graduation-Project'
+  URI: 'mongodb://127.0.0.1:27017/Graduation-Project'
 };
