@@ -17,6 +17,7 @@ export default function (err, req, res, next) { // eslint-disable-line no-unused
   return res.status(500).json({
     status: 500,
     state: 'Fail',
-    message: '服务器开小差了'
+    message: '服务器开小差了',
+    err
   });
 }
