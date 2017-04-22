@@ -5,9 +5,9 @@ import logger from 'morgan';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import APIRouters from './routes';
+import initializeDB from './initializeDB';
 import { checkToken, errorHandler } from './middlewares';
 import { mongoDB, version, publicPath } from './config';
-import { initializeSystem } from './utils';
 
 /* eslint no-console: 0 */
 mongoose.connect(mongoDB.URI, (err) => {
@@ -16,7 +16,7 @@ mongoose.connect(mongoDB.URI, (err) => {
     process.exit(1);
   }
   console.log('INFO: 数据库连接成功');
-  initializeSystem().then((info) => {
+  initializeDB().then((info) => {
     console.log(`INFO: ${info}`);
   }).catch((error) => {
     console.log(`ERROR: ${error}`);
