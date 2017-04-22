@@ -6,5 +6,6 @@ export default [
   `${URIprefix}/auth/login`,
   `${URIprefix}/user/apply`,
   `${URIprefix}/user/forget-pwd`,
-  `${URIprefix}/user/set-pwd`
+  `${URIprefix}/user/set-pwd`,
+  `${URIprefix}/academy/load`
 ];
