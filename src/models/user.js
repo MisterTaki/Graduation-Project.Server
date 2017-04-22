@@ -23,13 +23,13 @@ const studentSchema = mongoose.Schema({
     type: String,
     required: true
   },
-  academy: {
+  academyID: {
     type: String,
     required: true
   },
   ID: {
     type: String,
-    required: true
+    required: true,
   },
   email: String,
   mobile: String,
@@ -61,14 +61,22 @@ const teacherSchema = mongoose.Schema({
     type: String,
     required: true
   },
-  academy: {
+  academyID: {
     type: String,
     required: true
   },
   ID: {
-    type: Number,
+    type: String,
     required: true,
     unique: true
+  },
+  education: {
+    type: String,
+    required: true
+  },
+  position: {
+    type: String,
+    required: true
   },
   email: {
     type: String,
@@ -78,8 +86,6 @@ const teacherSchema = mongoose.Schema({
     type: String,
     unique: true
   },
-  education: String,
-  position: String,
   topics: [String],
   students: [String]
 });
@@ -110,12 +116,12 @@ const adminSchema = mongoose.Schema({
     type: String,
     required: true
   },
-  academy: {
+  academyID: {
     type: String,
     required: true
   },
   ID: {
-    type: Number,
+    type: String,
     required: true,
     unique: true
   },
@@ -143,7 +149,7 @@ const applyStudentSchema = mongoose.Schema({
     type: String,
     required: true
   },
-  academy: {
+  academyID: {
     type: String,
     required: true
   },

@@ -1,7 +1,7 @@
 import moment from 'moment';
 import mongoose from '../mongoose';
 import { APIError } from '../helpers';
-import { system } from '../config';
+import { system } from '../initializeDB';
 
 const systemSchema = mongoose.Schema({
   _id: {
@@ -19,7 +19,7 @@ const systemSchema = mongoose.Schema({
 systemSchema.statics = {
   getStatus () {
     return new Promise((resolve, reject) => {
-      this.findById(system.id).exec()
+      this.findById(system._id).exec()
         .then((settings) => {
           if (settings) {
             if (!system.enabled) {
