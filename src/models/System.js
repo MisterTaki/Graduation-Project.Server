@@ -1,7 +1,7 @@
 import moment from 'moment';
 import mongoose from '../mongoose';
 import { APIError } from '../helpers';
-import { system } from '../initializeDB';
+import system from '../initializeDB/system';
 
 const systemSchema = mongoose.Schema({
   _id: {
