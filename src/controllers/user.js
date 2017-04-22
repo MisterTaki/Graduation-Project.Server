@@ -9,12 +9,13 @@ import { User, Captcha } from '../models';
  * @property  {String}  params.identity  [用户身份]
  */
 function create ({ body }, res, next) {
-  const Account = User[titleCase(body.identity)];
+  const { identity, ...info } = body;
   const { _id } = body;
+  const Account = User[titleCase(body.identity)];
   return Account.notUserById(_id)
     .then(() => Crypto.encrypt(body.ID.substring(12)))
     .then(({ salt, pwd }) => Account.create({
-      ...body,
+      ...info,
       salt,
       pwd,
     }))
@@ -26,9 +27,9 @@ function create ({ body }, res, next) {
 
 function apply ({ body }, res, next) {
   const { identity, ...info } = body;
+  const { _id } = body;
   const targetAccount = User[titleCase(identity)];
   const Account = User[`Apply${titleCase(identity)}`];
-  const { _id } = body;
   return targetAccount.notUserById(_id)
     .then(() => Account.notUserById(_id))
     .then(() => Account.create({
