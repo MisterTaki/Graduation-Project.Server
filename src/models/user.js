@@ -33,7 +33,7 @@ const studentSchema = mongoose.Schema({
   },
   email: String,
   mobile: String,
-  class: String,
+  _class: String,
   major: String,
   choosedTopic: String,
   teacher: String,
@@ -168,7 +168,7 @@ const applyStudentSchema = mongoose.Schema({
     required: true,
     unique: true
   },
-  class: {
+  _class: {
     type: String,
     required: true
   },
@@ -212,6 +212,15 @@ const statics = {
   setPwdByEmail (email, salt, pwd) {
     return new Promise((resolve, reject) => {
       this.findOneAndUpdate({ email }, { salt, pwd }).exec()
+      .then(() => {
+        resolve();
+      })
+      .catch(err => reject(err));
+    });
+  },
+  modifyPwdById (_id, salt, pwd) {
+    return new Promise((resolve, reject) => {
+      this.findOneAndUpdate({ _id }, { salt, pwd }).exec()
       .then(() => {
         resolve();
       })
