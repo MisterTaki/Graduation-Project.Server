@@ -41,6 +41,27 @@ function apply ({ body }, res, next) {
     .catch(next);
 }
 
+function load ({ user }, res, next) {
+  const { _id, identity } = user;
+  return User[titleCase(identity)].getUserById(_id)
+    .then(({ username, gender, ID, _class, academyID, major, email, mobile }) => res.json({
+      ...successRes,
+      result: {
+        identity,
+        username,
+        gender,
+        ID,
+        _id,
+        _class,
+        academyID,
+        major,
+        email,
+        mobile
+      }
+    }))
+    .catch(next);
+}
+
 function forgetPwd ({ body }, res, next) {
   const { identity, boundEmail } = body;
   if (!boundEmail || !identity) {
@@ -75,9 +96,25 @@ function setPwd ({ body }, res, next) {
     .catch(next);
 }
 
+function modifyPwd ({ body, user }, res, next) {
+  const { _id, identity } = user;
+  const { oldPwd, newPwd } = body;
+  const Account = User[titleCase(identity)];
+  return Account.getUserById(_id)
+    .then(({ salt, pwd }) => Crypto.decrypt(oldPwd, salt, pwd))
+    .then(() => Crypto.encrypt(newPwd))
+    .then(({ salt, pwd }) => Account.modifyPwdById(_id, salt, pwd))
+    .then(() => res.json({
+      ...successRes
+    }))
+    .catch(next);
+}
+
 export default {
   create,
   apply,
+  load,
   forgetPwd,
-  setPwd
+  setPwd,
+  modifyPwd
 };
