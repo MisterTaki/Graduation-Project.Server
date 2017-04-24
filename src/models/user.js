@@ -226,6 +226,15 @@ const statics = {
       })
       .catch(err => reject(err));
     });
+  },
+  setEmailById (_id, email) {
+    return new Promise((resolve, reject) => {
+      this.findOneAndUpdate({ _id }, { email }).exec()
+      .then(() => {
+        resolve();
+      })
+      .catch(err => reject(err));
+    });
   }
 };
 
