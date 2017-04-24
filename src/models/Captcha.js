@@ -5,6 +5,7 @@ import { APIError } from '../helpers';
 const captchaSchema = mongoose.Schema({
   code: String,
   email_address: String,
+  type: String,
   isValidated: {
     type: Boolean,
     default: false
@@ -12,9 +13,10 @@ const captchaSchema = mongoose.Schema({
 });
 
 captchaSchema.statics = {
-  validate (captchaCode, emailAddress) {
+  validate (captchaCode, emailAddress, type) {
     return new Promise((resolve, reject) => {
       this.find({}).sort('-_id').findOne({
+        type,
         code: captchaCode,
         email_address: emailAddress,
         isValidated: false
@@ -31,7 +33,7 @@ captchaSchema.statics = {
       .catch(err => reject(err));
     });
   },
-  serValidatedById (_id) {
+  setValidatedById (_id) {
     return new Promise((resolve, reject) => {
       this.findOneAndUpdate({ _id }, { isValidated: true }).exec()
       .then(() => resolve())
