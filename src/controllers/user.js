@@ -44,21 +44,65 @@ function apply ({ body }, res, next) {
 function load ({ user }, res, next) {
   const { _id, identity } = user;
   return User[titleCase(identity)].getUserById(_id)
-    .then(({ username, gender, ID, _class, academyID, major, email, mobile }) => res.json({
-      ...successRes,
-      result: {
-        identity,
-        username,
-        gender,
-        ID,
-        _id,
-        _class,
-        academyID,
-        major,
-        email,
-        mobile
+    .then((info) => {
+      switch (identity) {
+        case 'student': {
+          const { username, gender, ID, _class, academyID, major, email, mobile } = info;
+          return res.json({
+            ...successRes,
+            result: {
+              identity,
+              username,
+              gender,
+              ID,
+              _id,
+              _class,
+              academyID,
+              major,
+              email,
+              mobile
+            }
+          });
+        }
+        case 'teacher': {
+          const { username, gender, ID, education, academyID, position, email, mobile } = info;
+          return res.json({
+            ...successRes,
+            result: {
+              identity,
+              username,
+              gender,
+              ID,
+              _id,
+              education,
+              academyID,
+              position,
+              email,
+              mobile
+            }
+          });
+        }
+        case 'admin': {
+          const { username, gender, ID, level, academyID, email, mobile } = info;
+          return res.json({
+            ...successRes,
+            result: {
+              identity,
+              username,
+              gender,
+              ID,
+              _id,
+              level,
+              academyID,
+              email,
+              mobile
+            }
+          });
+        }
+        default:
+          return false;
       }
-    }))
+    })
     .catch(next);
 }
 
