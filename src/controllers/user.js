@@ -69,7 +69,7 @@ function forgetPwd ({ body }, res, next) {
   }
   const Account = User[titleCase(identity)];
   return Account.hasUserByEmail(boundEmail)
-    .then(() => Email.resetPwd(boundEmail))
+    .then(() => Email.sendCaptcha(boundEmail, 'set-pwd'))
     .then(() => res.json({
       ...successRes
     }))
@@ -83,13 +83,13 @@ function setPwd ({ body }, res, next) {
   }
   let captchaId;
   const Account = User[titleCase(identity)];
-  return Captcha.validate(captcha, boundEmail)
+  return Captcha.validate(captcha, boundEmail, 'set-pwd')
     .then((id) => {
       captchaId = id;
       return Crypto.encrypt(newPwd);
     })
     .then(({ salt, pwd }) => Account.setPwdByEmail(boundEmail, salt, pwd))
-    .then(() => Captcha.serValidatedById(captchaId))
+    .then(() => Captcha.setValidatedById(captchaId))
     .then(() => res.json({
       ...successRes
     }))
@@ -110,11 +110,48 @@ function modifyPwd ({ body, user }, res, next) {
     .catch(next);
 }
 
+function modifyEmail ({ body }, res, next) {
+  const { newEmail } = body;
+  if (!newEmail) {
+    return next(new APIError('Missing parameters', 400));
+  }
+  return Email.sendCaptcha(newEmail, 'set-email')
+    .then(() => res.json({
+      ...successRes
+    }))
+    .catch(next);
+}
+
+function setEmail ({ body, user }, res, next) {
+  const { newEmail, captcha } = body;
+  if (!newEmail || !captcha) {
+    return next(new APIError('Missing parameters', 400));
+  }
+  const { identity, _id } = user;
+  let captchaId;
+  const Account = User[titleCase(identity)];
+  return Captcha.validate(captcha, newEmail, 'set-email')
+    .then((id) => {
+      captchaId = id;
+      return Account.setEmailById(_id, newEmail);
+    })
+    .then(() => Captcha.setValidatedById(captchaId))
+    .then(() => res.json({
+      ...successRes,
+      result: {
+        newEmail
+      }
+    }))
+    .catch(next);
+}
+
 export default {
   create,
   apply,
   load,
   forgetPwd,
   setPwd,
-  modifyPwd
+  modifyPwd,
+  modifyEmail,
+  setEmail
 };
