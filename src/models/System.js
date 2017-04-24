@@ -36,7 +36,7 @@ systemSchema.statics = {
               }
             }
             if (moment().isAfter(startTimes[timesLen - 1])) {
-              return resolve(-1);
+              return resolve(timesLen);
             }
           }
           return reject(new APIError('系统暂未设置', 500));
