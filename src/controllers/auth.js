@@ -31,8 +31,8 @@ function login ({ body }, res, next) {
     .catch(next);
 }
 
-function load (req, res, next) {
-  const { _id, identity } = req.user;
+function load ({ user }, res, next) {
+  const { _id, identity } = user;
   return User[titleCase(identity)].getUserById(_id)
     .then(({ username }) => res.json({
       ...successRes,
