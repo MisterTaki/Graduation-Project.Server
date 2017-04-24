@@ -5,7 +5,7 @@
   "author": "MisterTaki <ustb_gaoqi@163.com>",
   "private": true,
   "scripts": {
-    "dev": "nodemon ./src/bin/www --exec babel-node",
+    "dev": "nodemon ./src/bin/www -L --exec babel-node",
     "lint": "eslint ./src",
     "build": "babel src -d dist",
     "start": "node ./dist/bin/www"
