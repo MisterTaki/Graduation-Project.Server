@@ -5,6 +5,8 @@ import systemRoutes from './system';
 import academyRoutes from './academy';
 import noticeRoutes from './notice';
 import messageRoutes from './message';
+import topicRoutes from './topic';
+import volunteerRoutes from './volunteer';
 
 const router = express.Router();
 
@@ -14,5 +16,7 @@ router.use('/system', systemRoutes);
 router.use('/academy', academyRoutes);
 router.use('/notice', noticeRoutes);
 router.use('/message', messageRoutes);
+router.use('/topic', topicRoutes);
+router.use('/volunteer', volunteerRoutes);
 
 export default router;
