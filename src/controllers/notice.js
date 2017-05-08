@@ -25,7 +25,7 @@ function publish ({ body, user }, res, next) {
 }
 
 function load (req, res, next) {
-  return Notice.find({}, 'title content remark author created_at').sort('-_id').exec()
+  return Notice.find({ isDeleted: false }, 'title content remark author created_at').sort('-_id').exec()
     .then(noticeList => res.json({
       ...successRes,
       result: {
@@ -41,7 +41,7 @@ function remove ({ body, user }, res, next) {
     return next(new APIError('不是管理员，无法删除', 401));
   }
   const { _id } = body;
-  return Notice.findByIdAndRemove(_id).exec()
+  return Notice.findByIdAndRemove(_id)
     .then(() => res.json({
       ...successRes
     }))
