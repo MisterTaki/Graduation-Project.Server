@@ -1,5 +1,5 @@
 import { APIError } from '../helpers';
-import { titleCase, successRes } from '../utils';
+import { successRes } from '../utils';
 import { Notice, User } from '../models';
 
 function publish ({ body, user }, res, next) {
@@ -8,7 +8,7 @@ function publish ({ body, user }, res, next) {
     return next(new APIError('不是管理员，无法发布', 401));
   }
   const { title, content, remark } = body;
-  return User[titleCase(identity)].getUserById(_id)
+  return User.Admin.getUserById(_id)
     .then(({ username }) => Notice.create({
       title,
       content,
