@@ -13,6 +13,11 @@ export default function (schema, options) { // eslint-disable-line no-unused-var
     next();
   });
 
+  schema.pre('updateMany', function (next) {
+    this.update({}, { updated_at: moment().format('YYYY-MM-DD HH:mm:ss') });
+    next();
+  });
+
   schema.pre('findOneAndUpdate', function (next) {
     this.update({ updated_at: moment().format('YYYY-MM-DD HH:mm:ss') });
     next();
