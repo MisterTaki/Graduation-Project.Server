@@ -3,11 +3,11 @@ import mongoose from '../mongoose';
 const messageSchema = mongoose.Schema({
   isMarkedByReceiver: {
     type: Boolean,
-    defalut: false
+    default: false
   },
   isDeletedByReceiver: {
     type: Boolean,
-    defalut: false
+    default: false
   },
   senderID: {
     type: String,
@@ -45,24 +45,45 @@ const messageSchema = mongoose.Schema({
 });
 
 messageSchema.statics = {
+  getLatestMessagesById (receiverID) {
+    return new Promise((resolve, reject) => {
+      this.find({ receiverID, isMarkedByReceiver: false }, 'title').sort('-_id').exec()
+      .then(messageList => resolve(messageList))
+      .catch(err => reject(err));
+    });
+  },
   getReceiveMessagesById (receiverID) {
     return new Promise((resolve, reject) => {
-      this.find({ receiverID, isDeletedByReceiver: false }, 'senderID senderIdentity senderName title content remark created_at').exec()
+      this.find({ receiverID, isDeletedByReceiver: false }, 'senderID senderIdentity senderName title content remark created_at').sort('-_id').exec()
       .then(messageList => resolve(messageList))
       .catch(err => reject(err));
     });
   },
   getSendMessagesById (senderID) {
     return new Promise((resolve, reject) => {
-      this.find({ senderID }, 'receiverID receiverIdentity receiverName title content remark created_at').exec()
+      this.find({ senderID }, 'receiverID receiverIdentity receiverName title content remark created_at').sort('-_id').exec()
       .then(messageList => resolve(messageList))
       .catch(err => reject(err));
     });
   },
-  getDeleteMessagesById (receiverID) {
+  getDeletedMessagesById (receiverID) {
     return new Promise((resolve, reject) => {
-      this.find({ receiverID, isDeletedByReceiver: true }, 'receiverID receiverIdentity receiverName title content remark created_at').exec()
+      this.find({ receiverID, isDeletedByReceiver: true }, 'senderID senderIdentity senderName title content remark created_at').sort('-_id').exec()
       .then(messageList => resolve(messageList))
+      .catch(err => reject(err));
+    });
+  },
+  deleteById (_id) {
+    return new Promise((resolve, reject) => {
+      this.findOneAndUpdate({ _id }, { isDeletedByReceiver: true }).exec()
+      .then(() => resolve())
+      .catch(err => reject(err));
+    });
+  },
+  markByReceiverId (receiverID) {
+    return new Promise((resolve, reject) => {
+      this.updateMany({ receiverID, isMarkedByReceiver: false }, { isMarkedByReceiver: true }).exec()
+      .then(() => resolve())
       .catch(err => reject(err));
     });
   }
