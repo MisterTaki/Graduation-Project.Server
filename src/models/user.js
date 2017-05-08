@@ -212,34 +212,48 @@ const statics = {
   setPwdByEmail (email, salt, pwd) {
     return new Promise((resolve, reject) => {
       this.findOneAndUpdate({ email }, { salt, pwd }).exec()
-      .then(() => {
-        resolve();
-      })
+      .then(() => resolve())
       .catch(err => reject(err));
     });
   },
   modifyPwdById (_id, salt, pwd) {
     return new Promise((resolve, reject) => {
       this.findOneAndUpdate({ _id }, { salt, pwd }).exec()
-      .then(() => {
-        resolve();
-      })
+      .then(() => resolve())
       .catch(err => reject(err));
     });
   },
   setEmailById (_id, email) {
     return new Promise((resolve, reject) => {
       this.findOneAndUpdate({ _id }, { email }).exec()
-      .then(() => {
-        resolve();
-      })
+      .then(() => resolve())
       .catch(err => reject(err));
     });
   }
 };
 
 studentSchema.statics = statics;
-teacherSchema.statics = statics;
+teacherSchema.statics = Object.assign({
+  addTopicById (_id, newTopics) {
+    return new Promise((resolve, reject) => {
+      this.findById(_id).exec()
+      .then((user) => {
+        const oldTopics = user.topics;
+        const topics = oldTopics.concat(newTopics);
+        user.update({ topics }).exec();
+      })
+      .then(() => resolve())
+      .catch(err => reject(err));
+    });
+  },
+  getVolunteerTeachers () {
+    return new Promise((resolve, reject) => {
+      this.find({}, '_id username gender education position academyID mobile email topics students').exec()
+      .then(teachers => resolve(teachers))
+      .catch(err => reject(err));
+    });
+  }
+}, statics);
 adminSchema.statics = statics;
 applyStudentSchema.statics = statics;
 
