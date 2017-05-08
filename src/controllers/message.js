@@ -30,10 +30,20 @@ function load ({ user, query }, res, next) {
   const { _id } = user;
   const { type } = query;
   let getMessageMethod;
-  if (type === 'receive') {
-    getMessageMethod = 'getReceiveMessagesById';
-  } else if (type === 'send') {
-    getMessageMethod = 'getSendMessagesById';
+  switch (type) {
+    case 'receive':
+      getMessageMethod = 'getReceiveMessagesById';
+      break;
+    case 'send':
+      getMessageMethod = 'getSendMessagesById';
+      break;
+    case 'deleted':
+      getMessageMethod = 'getDeletedMessagesById';
+      break;
+    case 'latest':
+      getMessageMethod = 'getLatestMessagesById';
+      break;
+    default:
   }
   return Message[getMessageMethod](_id)
     .then(messageList => res.json({
@@ -45,7 +55,27 @@ function load ({ user, query }, res, next) {
     .catch(next);
 }
 
+function mark ({ user }, res, next) {
+  const { _id } = user;
+  return Message.markByReceiverId(_id)
+    .then(() => res.json({
+      ...successRes
+    }))
+    .catch(next);
+}
+
+function remove ({ user, body }, res, next) {
+  const { messageID } = body;
+  return Message.deleteById(messageID)
+    .then(() => res.json({
+      ...successRes
+    }))
+    .catch(next);
+}
+
 export default {
   send,
-  load
+  load,
+  remove,
+  mark
 };
