@@ -1,9 +1,9 @@
 import { APIError } from '../helpers';
 import { successRes } from '../utils';
-import { User } from '../models';
+import { User, Volunteer } from '../models';
 
 function load ({ user, query }, res, next) {
-  const { identity } = user;
+  const { _id, identity } = user;
   const { type } = query;
   if (identity === 'student' && type === 'option') {
     return User.Teacher.getVolunteerTeachers()
@@ -14,10 +14,59 @@ function load ({ user, query }, res, next) {
       }
     }))
     .catch(next);
+  } else if (identity === 'student' && type === 'choosed') {
+    return Volunteer.getChoosedTeachersById(_id)
+    .then(choosedTeachers => res.json({
+      ...successRes,
+      result: {
+        choosedTeachers
+      }
+    }))
+    .catch(next);
+  } else if (identity === 'student' && type === 'status') {
+    return Volunteer.getStatusById(_id)
+    .then(status => res.json({
+      ...successRes,
+      result: {
+        status
+      }
+    }))
+    .catch(next);
+  } else if (identity === 'teacher' && type === 'option') {
+    return Volunteer.getStudentOptionsById(_id)
+    .then(students => res.json({
+      ...successRes,
+      result: {
+        students
+      }
+    }))
+    .catch(next);
   }
   return next(new APIError('参数格式错误', 400));
 }
 
+function choose ({ user, body }, res, next) {
+  const { _id, identity } = user;
+  if (identity === 'student') {
+    const { firstTeacherID, firstTopic, secondTeacherID, secondTopic, thirdTeacherID, thirdTopic } = body;
+    return Volunteer.create({
+      student: _id,
+      firstTeacher: firstTeacherID,
+      firstTopic,
+      secondTeacher: secondTeacherID,
+      secondTopic,
+      thirdTeacher: thirdTeacherID,
+      thirdTopic
+    })
+    .then(() => res.json({
+      ...successRes
+    }))
+    .catch(next);
+  }
+  return next(new APIError('身份验证错误', 401));
+}
+
 export default {
-  load
+  load,
+  choose
 };
