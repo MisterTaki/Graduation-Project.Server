@@ -32,12 +32,30 @@ function load ({ user, query }, res, next) {
       }
     }))
     .catch(next);
+  } else if (identity === 'student' && type === 'confirmed') {
+    return User.Student.getTeacherById(_id)
+    .then(confirmedTeacher => res.json({
+      ...successRes,
+      result: {
+        confirmedTeacher
+      }
+    }))
+    .catch(next);
   } else if (identity === 'teacher' && type === 'option') {
     return Volunteer.getStudentOptionsById(_id)
     .then(students => res.json({
       ...successRes,
       result: {
         students
+      }
+    }))
+    .catch(next);
+  } else if (identity === 'teacher' && type === 'confirmed') {
+    return User.Teacher.getStudentsById(_id)
+    .then(confirmedStudents => res.json({
+      ...successRes,
+      result: {
+        confirmedStudents
       }
     }))
     .catch(next);
@@ -62,6 +80,15 @@ function choose ({ user, body }, res, next) {
       ...successRes
     }))
     .catch(next);
+  } else if (identity === 'teacher') {
+    const { ids, topics } = body;
+    return Volunteer.chooseStudents(_id, ids)
+      .then(() => User.Student.addTeacherAndTopic(ids, _id, topics))
+      .then(() => User.Teacher.addStudents(_id, ids))
+      .then(() => res.json({
+        ...successRes
+      }))
+      .catch(next);
   }
   return next(new APIError('身份验证错误', 401));
 }
