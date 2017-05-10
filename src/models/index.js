@@ -5,3 +5,6 @@ export Academy from './Academy';
 export Notice from './Notice';
 export Message from './Message';
 export Volunteer from './Volunteer';
+export Report from './Report';
+export Resource from './Resource';
+export Group from './Group';

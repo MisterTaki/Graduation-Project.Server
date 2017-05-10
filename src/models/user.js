@@ -40,6 +40,10 @@ const studentSchema = mongoose.Schema({
     type: String,
     ref: 'Teacher'
   },
+  group: {
+    type: String,
+    ref: 'Group'
+  }
 });
 
 const teacherSchema = mongoose.Schema({
@@ -93,7 +97,11 @@ const teacherSchema = mongoose.Schema({
   students: [{
     type: String,
     ref: 'Student'
-  }]
+  }],
+  group: {
+    type: String,
+    ref: 'Group'
+  }
 });
 
 const adminSchema = mongoose.Schema({
