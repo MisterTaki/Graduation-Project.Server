@@ -33,13 +33,17 @@ const volunteerSchema = mongoose.Schema({
     type: String,
     required: true,
   },
-  isCompletedd: {
+  isCompleted: {
     type: Boolean,
     default: false
   },
   status: {
     type: Number,
     default: 1
+  },
+  choosedBy: {
+    type: String,
+    ref: 'Teacher'
   }
 });
 
@@ -256,9 +260,9 @@ volunteerSchema.statics = {
       .catch(err => reject(err));
     });
   },
-  getStatusById (studentID) {
+  getStatusById (student) {
     return new Promise((resolve, reject) => {
-      this.findOne({ studentID }, 'isCompleted').exec()
+      this.findOne({ student }, 'isCompleted').exec()
       .then((record) => {
         if (record) {
           if (record.isCompleted) {
@@ -269,6 +273,15 @@ volunteerSchema.statics = {
         return resolve(0);
       })
       .catch(err => reject(err));
+    });
+  },
+  chooseStudents (_id, studentIDs) {
+    return new Promise((resolve, reject) => {
+      const tasks = [];
+      for (let i = 0; i < studentIDs.length; i += 1) {
+        tasks.push(this.findOneAndUpdate({ student: studentIDs[i] }, { isCompleted: true, choosedBy: _id }).exec());
+      }
+      Promise.all(tasks).then(() => resolve()).catch(err => reject(err));
     });
   }
 };

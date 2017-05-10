@@ -35,8 +35,11 @@ const studentSchema = mongoose.Schema({
   mobile: String,
   _class: String,
   major: String,
-  choosedTopic: String,
-  teacher: String,
+  topic: String,
+  teacher: {
+    type: String,
+    ref: 'Teacher'
+  },
 });
 
 const teacherSchema = mongoose.Schema({
@@ -87,7 +90,10 @@ const teacherSchema = mongoose.Schema({
     unique: true
   },
   topics: [String],
-  students: [String]
+  students: [{
+    type: String,
+    ref: 'Student'
+  }]
 });
 
 const adminSchema = mongoose.Schema({
@@ -232,7 +238,35 @@ const statics = {
   }
 };
 
-studentSchema.statics = statics;
+studentSchema.statics = Object.assign({
+  addTeacherAndTopic (studentIDs, teacherID, topics) {
+    return new Promise((resolve, reject) => {
+      const tasks = [];
+      for (let i = 0; i < studentIDs.length; i += 1) {
+        tasks.push(this.findOneAndUpdate({ _id: studentIDs[i] }, { teacher: teacherID, topic: topics[i] }).exec());
+      }
+      Promise.all(tasks).then(() => resolve()).catch(err => reject(err));
+    });
+  },
+  getTeacherById (_id) {
+    return new Promise((resolve, reject) => {
+      this.findOne({ _id }, 'teacher topic')
+      .populate('teacher', 'username gender position education academyID mobile email').exec()
+      .then(({ topic, teacher }) => resolve({
+        topic,
+        username: teacher.username,
+        gender: teacher.gender,
+        position: teacher.position,
+        education: teacher.education,
+        academyID: teacher.academyID,
+        mobile: teacher.mobile,
+        email: teacher.email
+      }))
+      .catch(err => reject(err));
+    });
+  },
+}, statics);
+
 teacherSchema.statics = Object.assign({
   addTopicById (_id, newTopics) {
     return new Promise((resolve, reject) => {
@@ -250,6 +284,26 @@ teacherSchema.statics = Object.assign({
     return new Promise((resolve, reject) => {
       this.find({}, '_id username gender education position academyID mobile email topics students').exec()
       .then(teachers => resolve(teachers))
+      .catch(err => reject(err));
+    });
+  },
+  getStudentsById (_id) {
+    return new Promise((resolve, reject) => {
+      this.findOne({ _id }, 'students')
+      .populate('students', '_id username gender _class topic major academyID mobile email').exec()
+      .then(({ students }) => resolve(students))
+      .catch(err => reject(err));
+    });
+  },
+  addStudents (_id, newStudents) {
+    return new Promise((resolve, reject) => {
+      this.findById(_id).exec()
+      .then((user) => {
+        const oldStudents = user.students;
+        const students = oldStudents.concat(newStudents);
+        user.update({ students }).exec();
+      })
+      .then(() => resolve())
       .catch(err => reject(err));
     });
   }
