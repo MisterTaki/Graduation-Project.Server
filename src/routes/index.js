@@ -7,6 +7,7 @@ import noticeRoutes from './notice';
 import messageRoutes from './message';
 import topicRoutes from './topic';
 import volunteerRoutes from './volunteer';
+import resourceRoutes from './resource';
 
 const router = express.Router();
 
@@ -18,5 +19,6 @@ router.use('/notice', noticeRoutes);
 router.use('/message', messageRoutes);
 router.use('/topic', topicRoutes);
 router.use('/volunteer', volunteerRoutes);
+router.use('/resource', resourceRoutes);
 
 export default router;
