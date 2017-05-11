@@ -247,6 +247,13 @@ const statics = {
 };
 
 studentSchema.statics = Object.assign({
+  getAll () {
+    return new Promise((resolve, reject) => {
+      this.find({}, '_id username gender _class major academyID ID email mobile teacher topic')
+      .then(results => resolve(results))
+      .catch(err => reject(err));
+    });
+  },
   addVolunteerInfos (studentIDs, teacherID, topics, group) {
     return new Promise((resolve, reject) => {
       const tasks = [];
@@ -276,6 +283,13 @@ studentSchema.statics = Object.assign({
 }, statics);
 
 teacherSchema.statics = Object.assign({
+  getAll () {
+    return new Promise((resolve, reject) => {
+      this.find({}, '_id username gender position education academyID ID email mobile students topics')
+      .then(results => resolve(results))
+      .catch(err => reject(err));
+    });
+  },
   addTopicById (_id, newTopics) {
     return new Promise((resolve, reject) => {
       this.findById(_id).exec()
@@ -316,7 +330,15 @@ teacherSchema.statics = Object.assign({
     });
   }
 }, statics);
-adminSchema.statics = statics;
+adminSchema.statics = Object.assign({
+  getAll () {
+    return new Promise((resolve, reject) => {
+      this.find({}, '_id username gender level academyID ID email mobile')
+      .then(results => resolve(results))
+      .catch(err => reject(err));
+    });
+  },
+}, statics);
 applyStudentSchema.statics = statics;
 
 export default {
