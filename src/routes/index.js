@@ -8,6 +8,8 @@ import messageRoutes from './message';
 import topicRoutes from './topic';
 import volunteerRoutes from './volunteer';
 import resourceRoutes from './resource';
+import reportRoutes from './report';
+import groupRoutes from './group';
 
 const router = express.Router();
 
@@ -20,5 +22,7 @@ router.use('/message', messageRoutes);
 router.use('/topic', topicRoutes);
 router.use('/volunteer', volunteerRoutes);
 router.use('/resource', resourceRoutes);
+router.use('/report', reportRoutes);
+router.use('/group', groupRoutes);
 
 export default router;
