@@ -4,6 +4,29 @@ import multer from 'multer';
 import { titleCase, successRes } from '../utils';
 import { Resource, User } from '../models';
 
+function load ({ user }, res, next) {
+  const { _id, identity } = user;
+  return User[titleCase(identity)].getUserById(_id)
+    .then(({ group }) => Resource.getById(group))
+    .then(resources => res.json({
+      ...successRes,
+      result: {
+        resources
+      }
+    }))
+    .catch(next);
+}
+
+function download ({ query }, res, next) {
+  const { _id } = query;
+  return Resource.findById(_id)
+    .then(({ resourceName, resourcePath }) => res.download(
+      resourcePath,
+      resourceName
+    ))
+    .catch(next);
+}
+
 /* eslint no-shadow: 0 */
 function upload (req, res, next) {
   const { user } = req;
@@ -31,28 +54,31 @@ function upload (req, res, next) {
       uploads(req, res, (err) => {
         if (err) throw (err);
         const { body } = req;
-        const { resourceName, resourceSize } = body;
-        const resourcePath = `./uploads/groups/${teacherID}/${moment().format('YYYYMMDDHHmmss')}-${resourceName}`;
-        fs.rename(req.files[0].path, resourcePath, (err) => {
-          if (err) throw (err);
-          return Resource.create({
-            uploaderID: _id,
-            uploaderIdentity: identity,
-            uploaderName: result.username,
-            resourcePath,
-            resourceName,
-            resourceSize,
-            group: result.group
-          });
-        });
+        const { resourceSize } = body;
+        const resourceName = `${moment().format('YYYYMMDDHHmmss')}-${body.resourceName}`;
+        Resource.create({
+          uploaderID: _id,
+          uploaderIdentity: identity,
+          uploaderName: result.username,
+          resourcePath: req.files[0].path,
+          resourceName,
+          resourceSize,
+          groupID: result.group
+        })
+        .then(resource => res.json({
+          ...successRes,
+          result: {
+            resource
+          }
+        }))
+        .catch(next);
       });
     })
-    .then(() => res.json({
-      ...successRes
-    }))
     .catch(next);
 }
 
 export default {
+  load,
   upload,
+  download
 };
