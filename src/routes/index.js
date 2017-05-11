@@ -10,6 +10,7 @@ import volunteerRoutes from './volunteer';
 import resourceRoutes from './resource';
 import reportRoutes from './report';
 import groupRoutes from './group';
+import accountRoutes from './account';
 
 const router = express.Router();
 
@@ -24,5 +25,6 @@ router.use('/volunteer', volunteerRoutes);
 router.use('/resource', resourceRoutes);
 router.use('/report', reportRoutes);
 router.use('/group', groupRoutes);
+router.use('/account', accountRoutes);
 
 export default router;
