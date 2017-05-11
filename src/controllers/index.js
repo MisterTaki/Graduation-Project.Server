@@ -9,3 +9,4 @@ export volunteer from './volunteer';
 export resource from './resource';
 export report from './report';
 export group from './group';
+export account from './account';
