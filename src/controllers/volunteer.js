@@ -1,6 +1,6 @@
 import { APIError } from '../helpers';
 import { successRes } from '../utils';
-import { User, Volunteer } from '../models';
+import { User, Volunteer, Group } from '../models';
 
 function load ({ user, query }, res, next) {
   const { _id, identity } = user;
@@ -82,9 +82,49 @@ function choose ({ user, body }, res, next) {
     .catch(next);
   } else if (identity === 'teacher') {
     const { ids, topics } = body;
+    let group = '';
     return Volunteer.chooseStudents(_id, ids)
-      .then(() => User.Student.addTeacherAndTopic(ids, _id, topics))
-      .then(() => User.Teacher.addStudents(_id, ids))
+      .then(() => Group.hasCreatedByTeacher(_id))
+      .then((hasCreated) => {
+        if (hasCreated) {
+          return Group.addStudents(_id, ids);
+        }
+        return Group.create({
+          teacher: _id,
+          students: ids
+        });
+      })
+      .then((result) => {
+        group = result._id;
+        return User.Student.addVolunteerInfos(ids, _id, topics, group);
+      })
+      .then(() => User.Teacher.addVolunteerInfos(_id, ids, group))
+      .then(() => res.json({
+        ...successRes
+      }))
+      .catch(next);
+  }
+  return next(new APIError('身份验证错误', 401));
+}
+
+function refuse ({ user, body }, res, next) {
+  const { _id, identity } = user;
+  const { student, order } = body;
+  if (identity === 'teacher') {
+    let orderText = '';
+    switch (order) {
+      case 1:
+        orderText = 'firstTeacher';
+        break;
+      case 2:
+        orderText = 'secondTeacher';
+        break;
+      case 3:
+        orderText = 'thirdTeacher';
+        break;
+      default:
+    }
+    return Volunteer.refuseStudent(student, orderText, _id)
       .then(() => res.json({
         ...successRes
       }))
@@ -95,5 +135,6 @@ function choose ({ user, body }, res, next) {
 
 export default {
   load,
-  choose
+  choose,
+  refuse
 };
