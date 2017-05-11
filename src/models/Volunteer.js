@@ -1,3 +1,4 @@
+import { APIError } from '../helpers';
 import mongoose from '../mongoose';
 
 const volunteerSchema = mongoose.Schema({
@@ -136,6 +137,7 @@ volunteerSchema.statics = {
                   optionStatus = '第三志愿老师正在选择';
                   break;
                 default:
+                  optionStatus = '未被任何老师确认选择';
               }
             }
             return {
@@ -187,6 +189,7 @@ volunteerSchema.statics = {
                   optionStatus = '第三志愿老师正在选择';
                   break;
                 default:
+                  optionStatus = '未被任何老师确认选择';
               }
             }
             return {
@@ -238,6 +241,7 @@ volunteerSchema.statics = {
                   optionStatus = '可以选择成为您的学生';
                   break;
                 default:
+                  optionStatus = '未被任何老师确认选择';
               }
             }
             return {
@@ -282,6 +286,19 @@ volunteerSchema.statics = {
         tasks.push(this.findOneAndUpdate({ student: studentIDs[i] }, { isCompleted: true, choosedBy: _id }).exec());
       }
       Promise.all(tasks).then(() => resolve()).catch(err => reject(err));
+    });
+  },
+  refuseStudent (student, order, teacherID) {
+    return new Promise((resolve, reject) => {
+      this.findOne({ student }).exec()
+      .then((result) => {
+        if (result[order] === teacherID) {
+          return result.update({ $inc: { status: 1 } }).exec();
+        }
+        return reject(new APIError('身份验证错误', 401));
+      })
+      .then(() => resolve())
+      .catch(err => reject(err));
     });
   }
 };
