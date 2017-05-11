@@ -247,11 +247,11 @@ const statics = {
 };
 
 studentSchema.statics = Object.assign({
-  addTeacherAndTopic (studentIDs, teacherID, topics) {
+  addVolunteerInfos (studentIDs, teacherID, topics, group) {
     return new Promise((resolve, reject) => {
       const tasks = [];
       for (let i = 0; i < studentIDs.length; i += 1) {
-        tasks.push(this.findOneAndUpdate({ _id: studentIDs[i] }, { teacher: teacherID, topic: topics[i] }).exec());
+        tasks.push(this.findOneAndUpdate({ _id: studentIDs[i] }, { teacher: teacherID, topic: topics[i], group }).exec());
       }
       Promise.all(tasks).then(() => resolve()).catch(err => reject(err));
     });
@@ -303,13 +303,13 @@ teacherSchema.statics = Object.assign({
       .catch(err => reject(err));
     });
   },
-  addStudents (_id, newStudents) {
+  addVolunteerInfos (_id, newStudents, group) {
     return new Promise((resolve, reject) => {
       this.findById(_id).exec()
       .then((user) => {
         const oldStudents = user.students;
         const students = oldStudents.concat(newStudents);
-        user.update({ students }).exec();
+        user.update({ students, group }).exec();
       })
       .then(() => resolve())
       .catch(err => reject(err));

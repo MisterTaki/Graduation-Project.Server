@@ -25,13 +25,20 @@ const resourceSchema = mongoose.Schema({
     type: String,
     required: true
   },
-  group: {
+  groupID: {
     type: String,
-    ref: 'Group'
+    required: true
   }
 });
 
 resourceSchema.statics = {
+  getById (groupID) {
+    return new Promise((resolve, reject) => {
+      this.find({ groupID }, 'uploaderName resourcePath resourceName resourceSize created_at').exec()
+      .then(results => resolve(results))
+      .catch(err => reject(err));
+    });
+  }
 };
 
 export default mongoose.model('resource', resourceSchema);

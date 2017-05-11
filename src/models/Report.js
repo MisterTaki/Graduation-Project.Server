@@ -26,11 +26,12 @@ const reportSchema = mongoose.Schema({
 });
 
 reportSchema.statics = {
-  getReportsById (teacher) {
+  getByTeacherId (teacher) {
     return new Promise((resolve, reject) => {
-      this.find({ teacher }, 'student reportPath reportName reportSize created_at')
+      this.find({ teacher }, '_id student reportPath reportName reportSize created_at')
       .populate('student', '_id username').exec()
       .then(results => resolve(results.map(item => ({
+        _id: item._id,
         studentID: item.student._id,
         studentName: item.student.username,
         reportPath: item.reportPath,
@@ -41,7 +42,7 @@ reportSchema.statics = {
       .catch(err => reject(err));
     });
   },
-  getRecordsById (student) {
+  getByStudentId (student) {
     return new Promise((resolve, reject) => {
       this.find({ student }, 'reportName reportSize created_at')
       .then(results => resolve(results))
