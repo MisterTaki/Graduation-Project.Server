@@ -30,6 +30,24 @@ function sendCaptcha (toEmail, type) {
   });
 }
 
+function applyReply (toEmail, type, id) {
+  return new Promise((resolve, reject) => {
+    const mailOptions = {
+      from: `毕业设计（论文）管理系统<${emailConfig.auth.user}>`,
+      to: toEmail,
+      subject: `账号：${id} 申请回复`,
+      text: type === 'success' ? `你申请的账号：${id} ，申请成功，初始密码为身份证号后6位，欢迎使用系统。` : `你申请的账号：${id} ，申请失败。`
+    };
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        return reject(new APIError('发送邮件通知失败'));
+      }
+      return resolve(info);
+    });
+  });
+}
+
 export default {
-  sendCaptcha
+  sendCaptcha,
+  applyReply
 };
