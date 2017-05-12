@@ -1,6 +1,40 @@
-import { APIError } from '../helpers';
+import { APIError, Crypto } from '../helpers';
 import { titleCase, successRes } from '../utils';
 import { User } from '../models';
+
+function create ({ user, body }, res, next) {
+  const { identity } = user;
+  if (identity === 'admin') {
+    const { identity: accountType, ...info } = body;
+    const Account = User[titleCase(accountType)];
+    return Account.notUserById(body._id)
+      .then(() => Crypto.encrypt(body.ID.substring(12)))
+      .then(({ salt, pwd }) => Account.create({
+        ...info,
+        salt,
+        pwd,
+      }))
+      .then(() => res.json({
+        ...successRes
+      }))
+      .catch(next);
+  }
+  return next(new APIError('身份验证错误', 401));
+}
+
+function remove ({ user, body }, res, next) {
+  const { identity } = user;
+  if (identity === 'admin') {
+    const { _id, identity: accountType } = body;
+    const Account = User[titleCase(accountType)];
+    return Account.remove({ _id }).exec()
+      .then(() => res.json({
+        ...successRes
+      }))
+      .catch(next);
+  }
+  return next(new APIError('身份验证错误', 401));
+}
 
 function load ({ user, query }, res, next) {
   const { identity } = user;
@@ -20,9 +54,9 @@ function load ({ user, query }, res, next) {
 
 function modify ({ user, body }, res, next) {
   const { identity } = user;
-  const { identity: accountType, _id: accountID } = body;
+  const { identity: accountType, _id, ...info } = body;
   if (identity === 'admin') {
-    return User[titleCase(accountType)].findOneAndUpdate({ _id: accountID }, { ...body })
+    return User[titleCase(accountType)].findOneAndUpdate({ _id }, info)
       .then(() => res.json({
         ...successRes
       }))
@@ -32,6 +66,8 @@ function modify ({ user, body }, res, next) {
 }
 
 export default {
+  create,
   load,
-  modify
+  modify,
+  remove
 };
