@@ -330,6 +330,7 @@ teacherSchema.statics = Object.assign({
     });
   }
 }, statics);
+
 adminSchema.statics = Object.assign({
   getAll () {
     return new Promise((resolve, reject) => {
@@ -339,11 +340,21 @@ adminSchema.statics = Object.assign({
     });
   },
 }, statics);
-applyStudentSchema.statics = statics;
+
+applyStudentSchema.statics = {
+  notUserById: statics.notUserById,
+  getAll () {
+    return new Promise((resolve, reject) => {
+      this.find({}, '_id username gender _class major academyID ID email mobile')
+      .then(results => resolve(results))
+      .catch(err => reject(err));
+    });
+  },
+};
 
 export default {
   Student: mongoose.model('Student', studentSchema),
   Teacher: mongoose.model('Teacher', teacherSchema),
   Admin: mongoose.model('Admin', adminSchema),
-  ApplyStudent: mongoose.model('Apply_Student', applyStudentSchema),
+  ApplyStudent: mongoose.model('ApplyStudent', applyStudentSchema),
 };
