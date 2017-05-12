@@ -9,10 +9,6 @@ const systemSchema = mongoose.Schema({
     required: true,
     unique: true
   },
-  enabled: {
-    type: Boolean,
-    required: true
-  },
   status_startAt: [String]
 });
 
